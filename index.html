@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>What's Your AI Risk Score? | Babson College</title>
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --green:      #1B4332;
+    --green-mid:  #2D6A4F;
+    --gold:       #C9A84C;
+    --gold-light: #E8C96A;
+    --cream:      #FAFAF7;
+    --border:     #E4E0D8;
+    --text:       #1A1A1A;
+    --text-soft:  #6B6560;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', sans-serif; background: var(--cream); color: var(--text); }
+
+  /* NAV */
+  nav { background: var(--green); padding: 16px 40px; display: flex; align-items: center; justify-content: space-between; }
+  .nav-left { display: flex; align-items: center; gap: 12px; }
+  .nav-mark { width: 32px; height: 32px; background: var(--gold); border-radius: 3px; display: flex; align-items: center; justify-content: center; font-family: 'Merriweather', serif; font-weight: 700; font-size: .95rem; color: var(--green); }
+  .nav-name { color: white; font-size: .9rem; font-weight: 500; }
+  .nav-dept { color: rgba(255,255,255,.5); font-size: .75rem; margin-top: 1px; }
+  .nav-badge { color: var(--gold-light); font-size: .7rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; border: 1px solid rgba(201,168,76,.3); padding: 4px 12px; border-radius: 20px; }
+
+  /* HERO */
+  .hero { background: var(--green); text-align: center; padding: 72px 24px 80px; border-bottom: 4px solid var(--gold); }
+  .hero-eyebrow { font-size: .7rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--gold-light); margin-bottom: 20px; }
+  .hero h1 { font-family: 'Merriweather', serif; font-size: clamp(2.2rem, 5vw, 3.6rem); font-weight: 700; color: white; line-height: 1.15; margin-bottom: 16px; }
+  .hero h1 em { color: var(--gold-light); font-style: italic; }
+  .hero-sub { font-size: 1rem; color: rgba(255,255,255,.65); max-width: 480px; margin: 0 auto 40px; line-height: 1.7; }
+  .hero-pills { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+  .pill { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); border-radius: 20px; padding: 6px 16px; font-size: .78rem; color: rgba(255,255,255,.75); }
+
+  /* STATS */
+  .stats { background: var(--green-mid); display: grid; grid-template-columns: repeat(3, 1fr); }
+  .stat { padding: 28px 24px; text-align: center; border-right: 1px solid rgba(255,255,255,.1); }
+  .stat:last-child { border-right: none; }
+  .stat-n { font-family: 'Merriweather', serif; font-size: 2rem; font-weight: 700; color: var(--gold-light); margin-bottom: 4px; }
+  .stat-l { font-size: .73rem; color: rgba(255,255,255,.55); line-height: 1.4; }
+
+  /* MAIN */
+  main { max-width: 700px; margin: 0 auto; padding: 56px 24px 80px; }
+
+  /* PROGRESS */
+  .progress-wrap { margin-bottom: 40px; }
+  .progress-meta { display: flex; justify-content: space-between; font-size: .75rem; color: var(--text-soft); margin-bottom: 8px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; }
+  .progress-track { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--gold)); transition: width .5s ease; }
+
+  /* CARD */
+  .card { background: white; border: 1px solid var(--border); border-radius: 4px; border-top: 3px solid var(--green); box-shadow: 0 4px 24px rgba(0,0,0,.06); animation: up .35s ease; }
+  @keyframes up { from { opacity:0; transform: translateY(16px); } to { opacity:1; transform: translateY(0); } }
+  .card-body { padding: 44px 48px 36px; }
+  .q-label { font-size: .68rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+  .card h2 { font-family: 'Merriweather', serif; font-size: 1.4rem; font-weight: 700; color: var(--green); line-height: 1.4; margin-bottom: 32px; }
+
+  /* OPTIONS */
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .opt { display: flex; align-items: flex-start; gap: 14px; padding: 16px 20px; background: var(--cream); border: 1.5px solid var(--border); border-radius: 3px; cursor: pointer; font-family: 'Inter', sans-serif; text-align: left; transition: all .18s ease; }
+  .opt:hover { border-color: var(--green-mid); background: #F2F7F4; }
+  .opt.selected { border-color: var(--green); background: #EAF2EE; }
+  .opt-letter { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid #C8C4BC; color: var(--text-soft); font-size: .72rem; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .18s; }
+  .opt:hover .opt-letter { border-color: var(--green-mid); color: var(--green-mid); }
+  .opt.selected .opt-letter { background: var(--green); border-color: var(--green); color: white; }
+  .opt strong { display: block; font-size: .9rem; font-weight: 600; margin-bottom: 2px; }
+  .opt span { font-size: .8rem; color: var(--text-soft); line-height: 1.4; }
+
+  /* CARD FOOTER */
+  .card-foot { padding: 20px 48px 32px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); background: #FAFAF7; border-radius: 0 0 4px 4px; }
+  .btn-back { background: none; border: 1.5px solid var(--border); color: var(--text-soft); padding: 11px 22px; font-family: 'Inter', sans-serif; font-size: .82rem; font-weight: 500; cursor: pointer; border-radius: 3px; transition: all .18s; }
+  .btn-back:hover { border-color: var(--text-soft); color: var(--text); }
+  .btn-next { background: var(--green); color: white; border: none; padding: 13px 32px; font-family: 'Inter', sans-serif; font-size: .88rem; font-weight: 600; cursor: pointer; border-radius: 3px; transition: all .18s; letter-spacing: .03em; margin-left: auto; }
+  .btn-next:hover:not(:disabled) { background: var(--green-mid); box-shadow: 0 4px 14px rgba(27,67,50,.25); }
+  .btn-next:disabled { background: #C8C4BC; cursor: default; }
+
+  /* EMAIL */
+  .form-card { border-top-color: var(--gold); }
+  .form-eyebrow { font-size: .68rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+  .form-card h2 { font-family: 'Merriweather', serif; font-size: 1.35rem; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+  .form-sub { font-size: .85rem; color: var(--text-soft); line-height: 1.6; margin-bottom: 28px; }
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: .7rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--green); margin-bottom: 6px; }
+  .field input { width: 100%; border: 1.5px solid var(--border); border-radius: 3px; padding: 12px 14px; font-family: 'Inter', sans-serif; font-size: .92rem; color: var(--text); background: var(--cream); transition: border-color .18s; }
+  .field input:focus { outline: none; border-color: var(--green); background: white; }
+  .field input::placeholder { color: #B8B4AC; }
+  .privacy { font-size: .74rem; color: var(--text-soft); line-height: 1.55; margin-bottom: 24px; padding: 12px 14px; background: var(--cream); border-radius: 3px; border: 1px solid var(--border); }
+  .btn-submit { width: 100%; background: var(--green); color: white; border: none; padding: 16px; font-family: 'Inter', sans-serif; font-size: .95rem; font-weight: 600; cursor: pointer; border-radius: 3px; transition: all .2s; letter-spacing: .04em; }
+  .btn-submit:hover:not(:disabled) { background: var(--green-mid); box-shadow: 0 4px 16px rgba(27,67,50,.25); }
+  .btn-submit:disabled { background: #C8C4BC; cursor: default; }
+
+  /* RESULTS */
+  .results-top { padding: 44px 48px 32px; display: flex; gap: 32px; align-items: flex-start; border-bottom: 1px solid var(--border); }
+  .score-ring { width: 110px; height: 110px; border-radius: 50%; border: 4px solid; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
+  .score-num { font-family: 'Merriweather', serif; font-size: 2.2rem; font-weight: 700; line-height: 1; }
+  .score-of { font-size: .62rem; color: var(--text-soft); letter-spacing: .08em; }
+  .score-info { flex: 1; }
+  .score-badge { display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: .7rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 10px; }
+  .score-info h2 { font-family: 'Merriweather', serif; font-size: 1.3rem; font-weight: 700; color: var(--green); margin-bottom: 8px; line-height: 1.3; }
+  .score-info p { font-size: .87rem; color: var(--text-soft); line-height: 1.65; }
+
+  .insights { padding: 28px 48px; border-bottom: 1px solid var(--border); }
+  .insights-label { font-size: .68rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--text-soft); margin-bottom: 20px; }
+  .insight { display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--border); }
+  .insight:last-child { border-bottom: none; }
+  .insight-icon { width: 36px; height: 36px; background: #F2F7F4; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+  .insight strong { display: block; font-size: .88rem; font-weight: 600; color: var(--green); margin-bottom: 3px; }
+  .insight p { font-size: .82rem; color: var(--text-soft); line-height: 1.55; }
+
+  .cta-block { margin: 32px 48px 44px; background: var(--green); border-radius: 4px; padding: 36px 40px; display: flex; gap: 28px; align-items: center; justify-content: space-between; }
+  .cta-block h3 { font-family: 'Merriweather', serif; font-size: 1.15rem; font-weight: 700; color: white; margin-bottom: 6px; }
+  .cta-block p { font-size: .82rem; color: rgba(255,255,255,.65); line-height: 1.55; }
+  .btn-cta { background: var(--gold); color: var(--green); text-decoration: none; padding: 13px 26px; font-family: 'Inter', sans-serif; font-weight: 700; font-size: .82rem; border-radius: 3px; white-space: nowrap; transition: background .18s; letter-spacing: .03em; flex-shrink: 0; }
+  .btn-cta:hover { background: var(--gold-light); }
+
+  footer { background: var(--green); padding: 24px 40px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .f-brand { color: rgba(255,255,255,.6); font-size: .78rem; }
+  .f-brand strong { color: white; }
+  footer a { color: var(--gold-light); font-size: .78rem; text-decoration: none; }
+
+  .hidden { display: none !important; }
+
+  @media (max-width: 600px) {
+    nav { padding: 14px 20px; } .nav-badge { display: none; }
+    .stats { grid-template-columns: 1fr; } .stat { border-right: none; border-bottom: 1px solid rgba(255,255,255,.1); }
+    .card-body, .card-foot { padding: 28px 20px; }
+    .results-top { flex-direction: column; padding: 28px 20px; }
+    .insights { padding: 20px; }
+    .cta-block { margin: 20px; padding: 28px 24px; flex-direction: column; }
+    .btn-cta { width: 100%; text-align: center; }
+    footer { padding: 20px; flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <div class="nav-mark">B</div>
+    <div>
+      <div class="nav-name">Babson College</div>
+      <div class="nav-dept">Professional & Executive Education</div>
+    </div>
+  </div>
+  <div class="nav-badge">AI Assessment</div>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">Executive AI Readiness · 60-Second Assessment</div>
+  <h1>What's Your<br><em>AI Risk Score?</em></h1>
+  <p class="hero-sub">The capability gap between AI-enabled and non-enabled organizations widens every week. Find out exactly where you stand.</p>
+  <div class="hero-pills">
+    <div class="pill">4 Questions</div>
+    <div class="pill">Under 60 Seconds</div>
+    <div class="pill">Personalized Results</div>
+    <div class="pill">No Cost</div>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-n">77%</div>
+    <div class="stat-l">of employers expect hands-on AI experience from their teams</div>
+  </div>
+  <div class="stat">
+    <div class="stat-n">56%</div>
+    <div class="stat-l">wage premium for professionals with demonstrated AI skills</div>
+  </div>
+  <div class="stat">
+    <div class="stat-n">3–5×</div>
+    <div class="stat-l">productivity gap between AI-enabled and non-enabled professionals</div>
+  </div>
+</div>
+
+<main>
+  <div class="progress-wrap">
+    <div class="progress-meta">
+      <span>Your Progress</span>
+      <span id="progressPct">0% Complete</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- Q1 -->
+  <div id="q1" class="card">
+    <div class="card-body">
+      <div class="q-label">Question 1 of 4</div>
+      <h2>How would you describe your organization's current use of AI tools?</h2>
+      <div class="options">
+        <button class="opt" data-q="1" data-val="1" onclick="pick(this)"><div class="opt-letter">A</div><div><strong>Not using AI at all</strong><span>We haven't explored AI tools yet</span></div></button>
+        <button class="opt" data-q="1" data-val="2" onclick="pick(this)"><div class="opt-letter">B</div><div><strong>Experimenting informally</strong><span>A few individuals use AI tools on their own</span></div></button>
+        <button class="opt" data-q="1" data-val="3" onclick="pick(this)"><div class="opt-letter">C</div><div><strong>Structured pilots underway</strong><span>We have team-level AI initiatives in progress</span></div></button>
+        <button class="opt" data-q="1" data-val="4" onclick="pick(this)"><div class="opt-letter">D</div><div><strong>AI embedded in operations</strong><span>AI is part of our standard workflows</span></div></button>
+      </div>
+    </div>
+    <div class="card-foot"><button class="btn-next" id="next1" onclick="next(1)" disabled>Continue →</button></div>
+  </div>
+
+  <!-- Q2 -->
+  <div id="q2" class="card hidden">
+    <div class="card-body">
+      <div class="q-label">Question 2 of 4</div>
+      <h2>How confident are your team members in using AI to increase their productivity?</h2>
+      <div class="options">
+        <button class="opt" data-q="2" data-val="1" onclick="pick(this)"><div class="opt-letter">A</div><div><strong>Not confident at all</strong><span>Most people don't know where to start</span></div></button>
+        <button class="opt" data-q="2" data-val="2" onclick="pick(this)"><div class="opt-letter">B</div><div><strong>Somewhat confident</strong><span>A handful of people are skilled; most are not</span></div></button>
+        <button class="opt" data-q="2" data-val="3" onclick="pick(this)"><div class="opt-letter">C</div><div><strong>Moderately confident</strong><span>We have training in place but gaps remain</span></div></button>
+        <button class="opt" data-q="2" data-val="4" onclick="pick(this)"><div class="opt-letter">D</div><div><strong>Highly confident</strong><span>AI fluency is a core competency across our teams</span></div></button>
+      </div>
+    </div>
+    <div class="card-foot"><button class="btn-back" onclick="back(2)">← Back</button><button class="btn-next" id="next2" onclick="next(2)" disabled>Continue →</button></div>
+  </div>
+
+  <!-- Q3 -->
+  <div id="q3" class="card hidden">
+    <div class="card-body">
+      <div class="q-label">Question 3 of 4</div>
+      <h2>How concerned are you that competitors are gaining an AI-driven advantage over your organization?</h2>
+      <div class="options">
+        <button class="opt" data-q="3" data-val="4" onclick="pick(this)"><div class="opt-letter">A</div><div><strong>Extremely concerned</strong><span>This is a top strategic priority for our leadership</span></div></button>
+        <button class="opt" data-q="3" data-val="3" onclick="pick(this)"><div class="opt-letter">B</div><div><strong>Somewhat concerned</strong><span>I see it coming but we haven't acted decisively yet</span></div></button>
+        <button class="opt" data-q="3" data-val="2" onclick="pick(this)"><div class="opt-letter">C</div><div><strong>Slightly concerned</strong><span>Monitoring the situation but feel reasonably positioned</span></div></button>
+        <button class="opt" data-q="3" data-val="1" onclick="pick(this)"><div class="opt-letter">D</div><div><strong>Not concerned</strong><span>We're ahead of our competitors in AI adoption</span></div></button>
+      </div>
+    </div>
+    <div class="card-foot"><button class="btn-back" onclick="back(3)">← Back</button><button class="btn-next" id="next3" onclick="next(3)" disabled>Continue →</button></div>
+  </div>
+
+  <!-- Q4 -->
+  <div id="q4" class="card hidden">
+    <div class="card-body">
+      <div class="q-label">Question 4 of 4</div>
+      <h2>Does your organization have a formal AI strategy or training roadmap in place?</h2>
+      <div class="options">
+        <button class="opt" data-q="4" data-val="1" onclick="pick(this)"><div class="opt-letter">A</div><div><strong>No strategy at all</strong><span>We haven't started planning for AI integration</span></div></button>
+        <button class="opt" data-q="4" data-val="2" onclick="pick(this)"><div class="opt-letter">B</div><div><strong>Informal discussions only</strong><span>Some conversations but nothing documented</span></div></button>
+        <button class="opt" data-q="4" data-val="3" onclick="pick(this)"><div class="opt-letter">C</div><div><strong>Strategy being developed</strong><span>We're actively building a plan with stakeholders</span></div></button>
+        <button class="opt" data-q="4" data-val="4" onclick="pick(this)"><div class="opt-letter">D</div><div><strong>Full roadmap in place</strong><span>Documented strategy, training programs, and KPIs</span></div></button>
+      </div>
+    </div>
+    <div class="card-foot"><button class="btn-back" onclick="back(4)">← Back</button><button class="btn-next" id="next4" onclick="next(4)" disabled>See My Results →</button></div>
+  </div>
+
+  <!-- EMAIL CAPTURE -->
+  <div id="emailCapture" class="card form-card hidden">
+    <div class="card-body">
+      <div class="form-eyebrow">Almost There</div>
+      <h2>Your AI Risk Score is ready</h2>
+      <p class="form-sub">Enter your details below to unlock your personalized score and recommendations from Babson College.</p>
+      <div class="field"><label>Full Name</label><input type="text" id="userName" placeholder="Jane Smith" /></div>
+      <div class="field"><label>Work Email</label><input type="email" id="userEmail" placeholder="jane@company.com" /></div>
+      <div class="field"><label>Company / Organization</label><input type="text" id="userCompany" placeholder="Acme Corporation" /></div>
+      <div class="privacy">🔒 Your information is kept confidential. By submitting, you agree to be contacted about relevant AI education programs from Babson College Professional & Executive Education.</div>
+      <button class="btn-submit" id="submitBtn" onclick="submitQuiz()">Reveal My AI Risk Score →</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="results" class="card hidden"></div>
+</main>
+
+<footer>
+  <div class="f-brand"><strong>Babson College</strong> — Professional & Executive Education</div>
+  <a href="mailto:pdennis@babson.edu">pdennis@babson.edu</a>
+</footer>
+
+<script>
+const answers = {};
+
+function pick(btn) {
+  const q = btn.dataset.q;
+  document.querySelectorAll(`.opt[data-q="${q}"]`).forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  answers[q] = parseInt(btn.dataset.val);
+  document.getElementById('next' + q).disabled = false;
+}
+
+function setProgress(step) {
+  const pct = Math.round(((step - 1) / 5) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressPct').textContent = pct + '% Complete';
+}
+
+function show(id) { document.getElementById(id).classList.remove('hidden'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+function hide(id) { document.getElementById(id).classList.add('hidden'); }
+
+function next(from) { hide('q' + from); setProgress(from + 1); show(from < 4 ? 'q' + (from + 1) : 'emailCapture'); }
+function back(from) { hide('q' + from); setProgress(from - 1); show('q' + (from - 1)); }
+
+function calcScore() {
+  return Math.round(((Object.values(answers).reduce((a,b) => a+b, 0) - 4) / 12) * 100);
+}
+
+function getProfile(score) {
+  if (score <= 25) return {
+    level: "Critical Risk", color: "#B84040", badgeBg: "#FDF0F0", badgeText: "#B84040",
+    headline: "Immediate action is needed.",
+    summary: "Your organization is in a vulnerable position. Competitors are compounding their AI advantage every week. The good news: organizations that begin structured upskilling now can still close the gap.",
+    insights: [
+      { icon: "⚠️", title: "High Exposure", body: "AI-enabled teams complete key tasks 3–5× faster. This gap compounds weekly and is already impacting competitive positioning." },
+      { icon: "📉", title: "Talent Risk", body: "77% of employers now expect AI fluency. Without it, your organization faces growing disadvantages in hiring and retaining top professionals." },
+      { icon: "🚀", title: "The Window Is Open", body: "Organizations that begin structured AI programs in the next 90 days will be in a meaningfully stronger position by year-end." }
+    ]
+  };
+  if (score <= 50) return {
+    level: "Elevated Risk", color: "#B87030", badgeBg: "#FDF4EC", badgeText: "#9C5E20",
+    headline: "Awareness is there — action is not.",
+    summary: "You understand the stakes but haven't yet built the systems or skills to capitalize. The window to act at low cost is still open, but it's narrowing as early movers pull ahead.",
+    insights: [
+      { icon: "⏱️", title: "Time Is a Factor", body: "Organizations just 6 months ahead in AI adoption are already seeing measurable productivity and revenue advantages over peers." },
+      { icon: "🧩", title: "Inconsistent Skills", body: "Informal AI use without structured training creates inconsistency. A few skilled individuals don't move the needle organization-wide." },
+      { icon: "📋", title: "No Roadmap = Reactive Mode", body: "Without a formal strategy, AI adoption stays reactive. A structured plan typically delivers 3× the ROI of ad hoc experimentation." }
+    ]
+  };
+  if (score <= 75) return {
+    level: "Moderate Risk", color: "#2C72A8", badgeBg: "#EEF5FB", badgeText: "#1A5A8A",
+    headline: "You're building — now scale it.",
+    summary: "You're moving in the right direction, but execution gaps remain. The challenge is converting early momentum into organization-wide capability before competitors do.",
+    insights: [
+      { icon: "📈", title: "Solid Foundation", body: "Your pilots and early programs are a real asset. The next step is systematizing them into repeatable, scalable workflows." },
+      { icon: "🎯", title: "Skill Distribution", body: "Uneven AI fluency across teams limits ROI. Structured programs that reach every level deliver 2–4× better outcomes." },
+      { icon: "🏆", title: "Edge Within Reach", body: "With focused investment over the next quarter, your organization can move from fast follower to sector leader." }
+    ]
+  };
+  return {
+    level: "Low Risk", color: "#1B7A4A", badgeBg: "#EBF7F1", badgeText: "#156038",
+    headline: "You're ahead — now lead.",
+    summary: "Your organization is in a strong position. The priority now is sustaining your advantage, deepening AI governance, and building the leadership skills to guide your industry through the transition.",
+    insights: [
+      { icon: "✅", title: "Strong Position", body: "You've moved beyond experimentation. Focus now shifts to AI governance, ethics frameworks, and competitive differentiation." },
+      { icon: "🔭", title: "The Next Frontier", body: "Leading organizations are applying AI to strategic foresight and executive decision-making — not just operational efficiency." },
+      { icon: "🤝", title: "Lead the Conversation", body: "Your team is positioned to shape industry norms. Executive programs can sharpen the AI leadership skills to do so." }
+    ]
+  };
+}
+
+function submitQuiz() {
+  const name    = document.getElementById('userName').value.trim();
+  const email   = document.getElementById('userEmail').value.trim();
+  const company = document.getElementById('userCompany').value.trim();
+  if (!name || !email || !company) { alert('Please complete all fields to see your results.'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert('Please enter a valid email address.'); return; }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true; btn.textContent = 'Calculating…';
+
+  const score   = calcScore();
+  const profile = getProfile(score);
+  const first   = name.split(' ')[0];
+
+  hide('emailCapture');
+  setProgress(5);
+
+  const el = document.getElementById('results');
+  el.innerHTML = `
+    <div class="results-top">
+      <div class="score-ring" style="border-color:${profile.color}; color:${profile.color}">
+        <div class="score-num">${score}</div>
+        <div class="score-of">/ 100</div>
+      </div>
+      <div class="score-info">
+        <div class="score-badge" style="background:${profile.badgeBg}; color:${profile.badgeText}">${profile.level}</div>
+        <h2>${first}, ${profile.headline}</h2>
+        <p>${profile.summary}</p>
+      </div>
+    </div>
+    <div class="insights">
+      <div class="insights-label">Key Risk Indicators for Your Organization</div>
+      ${profile.insights.map(i => `
+        <div class="insight">
+          <div class="insight-icon">${i.icon}</div>
+          <div><strong>${i.title}</strong><p>${i.body}</p></div>
+        </div>`).join('')}
+    </div>
+    <div class="cta-block">
+      <div>
+        <h3>Ready to reduce your AI risk?</h3>
+        <p>Schedule a free 15-minute conversation with Peter Dennis at Babson College to discuss a tailored AI strategy for your team.</p>
+      </div>
+      <a class="btn-cta" href="mailto:pdennis@babson.edu?subject=AI Risk Assessment — ${first} (Score: ${score}/100)&body=Hi Peter,%0D%0A%0D%0AI just completed the Babson AI Risk Assessment and scored ${score}/100 (${profile.level}).%0D%0A%0D%0AName: ${name}%0D%0ACompany: ${company}%0D%0AEmail: ${email}%0D%0A%0D%0AI'd love to schedule a 15-minute call.%0D%0A%0D%0ASource: Babson College Flyer">Book a 15-Minute Call →</a>
+    </div>
+  `;
+  show('results');
+}
+</script>
+</body>
+</html>
