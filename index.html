@@ -414,6 +414,27 @@
     .meet-team-grid { grid-template-columns: 1fr; gap: 14px; }
     .meet-team-card { padding: 18px 16px; }
   }
+
+  /* HERO-SUB TYPEWRITER + GOLD PULSE */
+  @keyframes heroSubGoldPulse {
+    0%   { color: #fff; text-shadow: none; }
+    45%  { color: #E8C96A; text-shadow: 0 0 18px rgba(232,201,106,.85), 0 0 40px rgba(232,201,106,.45); }
+    100% { color: rgba(255,255,255,.65); text-shadow: none; }
+  }
+  .hero-sub-pulse {
+    animation: heroSubGoldPulse 2s ease forwards;
+  }
+
+  /* PILL SEQUENTIAL GLOW */
+  @keyframes pillGlowAnim {
+    0%   { box-shadow: none; border-color: rgba(255,255,255,.14); color: rgba(255,255,255,.75); }
+    30%  { box-shadow: 0 0 10px 3px rgba(232,201,106,.75), 0 0 22px 6px rgba(232,201,106,.35); border-color: #E8C96A; color: #fff; }
+    70%  { box-shadow: 0 0 10px 3px rgba(232,201,106,.75), 0 0 22px 6px rgba(232,201,106,.35); border-color: #E8C96A; color: #fff; }
+    100% { box-shadow: none; border-color: rgba(255,255,255,.14); color: rgba(255,255,255,.75); }
+  }
+  .pill-glow {
+    animation: pillGlowAnim 1.3s ease forwards;
+  }
 </style>
 </head>
 <body>
@@ -430,10 +451,10 @@
   <h1>What's Your<br><em>AI Risk Score?</em></h1>
   <p class="hero-sub">The capability gap between AI-enabled and non-enabled organizations widens every week. Find out exactly where you stand.</p>
   <div class="hero-pills">
-    <div class="pill">4 Questions</div>
-    <div class="pill">Under 60 Seconds</div>
-    <div class="pill">Personalized Results</div>
-    <div class="pill">No Cost</div>
+    <div class="pill" id="pill-1">4 Questions</div>
+    <div class="pill" id="pill-2">Under 60 Seconds</div>
+    <div class="pill" id="pill-3">Personalized Results</div>
+    <div class="pill" id="pill-4">No Cost</div>
   </div>
 </div>
 
@@ -1118,6 +1139,63 @@ async function sendReferral(e) {
     setTimeout(function() { msg.className = 'refer-msg'; }, 6000);
   }, 3000);
 }
+
+/* ── HERO-SUB TYPEWRITER ANIMATION ─────────────────────────────── */
+(function() {
+  var heroSub = document.querySelector('.hero-sub');
+  if (!heroSub) return;
+  var fullText = heroSub.textContent.trim();
+  heroSub.textContent = '';
+  heroSub.style.color = '#fff';
+
+  var i = 0;
+  var speed = 42; // ms per char ≈ reading pace
+
+  function typeChar() {
+    if (i < fullText.length) {
+      heroSub.textContent += fullText[i];
+      i++;
+      setTimeout(typeChar, speed);
+    } else {
+      // Finished typing — pulse bright gold then settle back to original
+      heroSub.classList.add('hero-sub-pulse');
+    }
+  }
+
+  setTimeout(typeChar, 400); // slight delay so page is settled
+})();
+
+/* ── PILL SEQUENTIAL GLOW / PULSE ──────────────────────────────── */
+(function() {
+  var pillIds = ['pill-1', 'pill-2', 'pill-3', 'pill-4'];
+  var GLOW_DURATION = 1300; // must match CSS animation duration (ms)
+  var PAUSE_BETWEEN  = 3000; // ms pause between each pill
+
+  function glowPill(index) {
+    if (index >= pillIds.length) {
+      // All pills done — wait then loop from the top
+      setTimeout(function() { glowPill(0); }, PAUSE_BETWEEN);
+      return;
+    }
+    var pill = document.getElementById(pillIds[index]);
+    if (!pill) { glowPill(index + 1); return; }
+
+    // Remove class, force reflow, re-add to restart animation cleanly
+    pill.classList.remove('pill-glow');
+    void pill.offsetWidth;
+    pill.classList.add('pill-glow');
+
+    pill.addEventListener('animationend', function handler() {
+      pill.removeEventListener('animationend', handler);
+      pill.classList.remove('pill-glow');
+      // 3-second pause before the next pill
+      setTimeout(function() { glowPill(index + 1); }, PAUSE_BETWEEN);
+    });
+  }
+
+  // Start sequence shortly after page load
+  setTimeout(function() { glowPill(0); }, 600);
+})();
 </script>
 </body>
 </html>
