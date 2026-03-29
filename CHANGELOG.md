@@ -4,6 +4,19 @@ All changes to this project are documented here in reverse chronological order.
 
 ---
 
+## [1.15.1] — 2026-03-28 UTC
+### Fixed
+- **"Send the Assessment" blank white tab bug** — removed `window.open('mailto:...')` call that opened a blank browser tab on submit; replaced with fully in-page "Thank you" confirmation message
+- **Friend invitation** — now sends invitation email directly via FormSubmit instead of relying on the visitor's local email client
+- **Success message** — now shows inline: "✓ Thank you, [Name]! Scott & Peter have been notified, and an invitation has been sent to [friend email]"
+
+### Technical
+- Removed `window.open()` call from `sendReferral()` function
+- Added second FormSubmit AJAX call to deliver quiz invite link to the referred friend's email
+- Success message now uses `innerHTML` and explicit `display: block` toggle for reliable rendering
+
+---
+
 ## [1.15.0] — 2026-03-28 UTC
 ### Changed
 - **"Book a 15-Minute Call" button** — mailto link now automatically pre-fills subject as "Requested a 15 minute conversation", adds BCC to smagnacca@babson.edu, and includes the prospect's full name, email, company, and AI Risk Score in the email body

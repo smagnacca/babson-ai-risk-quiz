@@ -1114,30 +1114,35 @@ async function sendReferral(e) {
         'Note': name + ' used the "Send to a Friend" feature on the quiz site to refer ' + fEmail + '.'
       })
     });
-  } catch (_) { /* silent — mailto still fires */ }
+  } catch (_) { /* silent fail — notification best-effort */ }
 
-  // 2 ▸ Open user's email client to send friend the invite
-  const subject = encodeURIComponent("A quick quiz worth your time — What's Your AI Risk Score?");
-  const body = encodeURIComponent(
-    'Hi,\n\n' + name + ' thought you\'d find this valuable.\n\n' +
-    'Babson College Executive Education has a FREE 60-second AI Risk Assessment that benchmarks ' +
-    'your organization\'s AI readiness and gives you a personalized score with actionable insights.\n\n' +
-    'Take it here (it really is 60 seconds): ' + quizUrl + '\n\n' +
-    '— Sent via the Babson AI Risk Quiz'
-  );
-  window.open('mailto:' + fEmail + '?subject=' + subject + '&body=' + body, '_blank');
+  // 2 ▸ Send invitation email directly to the friend via FormSubmit
+  try {
+    await fetch('https://formsubmit.co/ajax/17899f8ddd7a78e5b7c4e2a4529ab00a', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        _subject: name + ' thought you\'d find this valuable — What\'s Your AI Risk Score?',
+        _replyto: 'pdennis@babson.edu',
+        _template: 'box',
+        'To': fEmail,
+        'Message': name + ' thought you\'d benefit from this free 60-second AI Risk Assessment from Babson College Executive Education.\n\nIt benchmarks your organization\'s AI readiness and gives you a personalized score with actionable insights.\n\nTake it here: ' + quizUrl + '\n\nCompliments of Babson College Executive Education.'
+      })
+    });
+  } catch (_) { /* silent fail */ }
 
-  // 3 ▸ Show success
-  msg.textContent = '\u2713 Your email client opened to send the invite to ' + fEmail + '. Scott & Peter have been notified of your referral!';
+  // 3 ▸ Show inline thank-you — NO new tab, NO blank page
+  msg.innerHTML = '<strong>✓ Thank you, ' + name + '!</strong><br>Scott & Peter have been notified, and an invitation has been sent to <em>' + fEmail + '</em>.';
   msg.className = 'refer-msg success';
+  msg.style.display = 'block';
   btn.textContent = 'Sent!';
   setTimeout(function() {
     btn.disabled = false;
     btn.textContent = 'Send the Assessment ✉';
     document.getElementById('referYourName').value = '';
     document.getElementById('referFriendEmail').value = '';
-    setTimeout(function() { msg.className = 'refer-msg'; }, 6000);
-  }, 3000);
+    setTimeout(function() { msg.style.display = 'none'; msg.className = 'refer-msg'; }, 6000);
+  }, 4000);
 }
 
 /* ── HERO-SUB TYPEWRITER ANIMATION ─────────────────────────────── */
