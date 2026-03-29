@@ -4,6 +4,27 @@ All changes to this project are documented here in reverse chronological order.
 
 ---
 
+## [1.16.0] — 2026-03-29 UTC
+### Added
+- **"60-Second Assessment Quiz" section header** — bold Babson Green (#1B4332) centered heading added above the "Your Progress / 0% Complete" progress bar to clearly label the quiz section for visitors
+
+### Infrastructure
+- **GitHub Actions auto-deploy workflow** — added `.github/workflows/deploy.yml` so every `git push` to `main` automatically zips and deploys to Netlify via API — no more manual deploys needed
+- **GitHub Secrets configured** — `NETLIFY_AUTH_TOKEN` and `NETLIFY_SITE_ID` added to repo secrets for use by the workflow
+- **GitHub PAT updated** — new token (`ghp_mkn...`) with `repo + workflow` scopes stored in project memory; old token retired
+- **Netlify token saved to memory** — API token and Site ID now persisted for future sessions
+
+### Technical
+- Deployment method clarified: site uses **Netlify API zip upload** (not GitHub auto-deploy via Netlify UI link); GitHub Actions now bridges this gap automatically
+- First GitHub Actions run: ✅ completed successfully
+
+### Deployed
+- GitHub commits: `8c3b685` (header), `bcd5b9b` (GitHub Actions workflow)
+- Netlify deploy ID: `69c91b96e174be9f3ee7a4b0` — state: **ready** ✅
+- Live at: https://babson-ai-risk-quiz.netlify.app
+
+---
+
 ## [1.15.1] — 2026-03-28 UTC
 ### Fixed
 - **"Send the Assessment" blank white tab bug** — removed `window.open('mailto:...')` call that opened a blank browser tab on submit; replaced with fully in-page "Thank you" confirmation message
