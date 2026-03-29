@@ -901,7 +901,7 @@ function buildResults(score, profile, name, first, email, company) {
         <h3>Want to start now?</h3>
         <p>Schedule a free 15-minute conversation with Peter Dennis at Babson College to discuss a tailored AI strategy for your team.</p>
       </div>
-      <a class="btn-cta" href="mailto:pdennis@babson.edu?subject=AI Risk Assessment — ${encodeURIComponent(first)} (Score: ${score}/100)&body=Hi Peter,%0D%0A%0D%0AI just completed the Babson AI Risk Assessment and scored ${score}/100 (${profile.level}).%0D%0A%0D%0AName: ${encodeURIComponent(name)}%0D%0ACompany: ${encodeURIComponent(company)}%0D%0AEmail: ${encodeURIComponent(email)}%0D%0A%0D%0AI'd love to schedule a 15-minute call.%0D%0A%0D%0ASource: Babson College Flyer">Book a 15-Minute Call →</a>
+      <a class="btn-cta" href="mailto:pdennis@babson.edu?bcc=smagnacca%40babson.edu&subject=Requested a 15 minute conversation&body=Hi Peter,%0D%0A%0D%0A${encodeURIComponent(name)} has requested a 15-minute conversation to discuss a tailored AI strategy for their team.%0D%0A%0D%0AProspect Details:%0D%0AName: ${encodeURIComponent(name)}%0D%0AEmail: ${encodeURIComponent(email)}%0D%0ACompany: ${encodeURIComponent(company)}%0D%0AAI Risk Score: ${score}/100 (${profile.level})%0D%0A%0D%0ASource: Babson College AI Risk Quiz">Book a 15-Minute Call →</a>
     </div>
   `;
 }

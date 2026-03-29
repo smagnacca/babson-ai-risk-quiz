@@ -4,6 +4,15 @@ All changes to this project are documented here in reverse chronological order.
 
 ---
 
+## [1.15.0] — 2026-03-28 UTC
+### Changed
+- **"Book a 15-Minute Call" button** — mailto link now automatically pre-fills subject as "Requested a 15 minute conversation", adds BCC to smagnacca@babson.edu, and includes the prospect's full name, email, company, and AI Risk Score in the email body
+
+### Technical
+- Updated `href` on `.btn-cta` anchor in `buildResults()` template to include `bcc=smagnacca%40babson.edu`, updated `subject` parameter, and restructured `body` to present prospect details clearly
+
+---
+
 ## [1.14.0] — 2026-03-24 UTC
 ### Added
 - **Hero subtitle typewriter animation** — "The capability gap between AI-enabled and non-enabled organizations widens every week. Find out exactly where you stand." types out character-by-character at reading speed (~42ms/char) in white on page load
